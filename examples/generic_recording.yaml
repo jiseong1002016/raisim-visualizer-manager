@@ -1,0 +1,52 @@
+vars:
+  python: python3
+  out_dir: artifacts/generic_recording
+
+artifacts:
+  out_dir: "{vars.out_dir}"
+  log: "{vars.out_dir}/visualizer.log"
+
+tester:
+  cwd: "{vars.config_dir}/.."
+  timeout_sec: 30
+  command:
+    - "{vars.python}"
+    - "-c"
+    - "import time; print('generic recording tester executed'); time.sleep(1.0)"
+  env:
+    PYTHONUNBUFFERED: "1"
+
+unity:
+  launch: false
+  position: false
+  display: ":92"
+  port: 8083
+  width: 320
+  height: 240
+  window_x: 0
+  window_y: 0
+
+recording:
+  enable: true
+  ffmpeg_bin: ffmpeg
+  width: 320
+  height: 240
+  seconds: 1.5
+  output: "{vars.out_dir}/unity.mp4"
+  crf: 30
+
+opencv:
+  capture_enable: false
+  window_x: 0
+  window_y: 0
+  width: 320
+  height: 240
+  output: "{vars.out_dir}/opencv.mp4"
+
+discord:
+  enable: false
+  webhook_env: DISCORD_WEBHOOK_URL
+  webhook_file: ""
+  message: "Generic RaiSim tester recording run complete."
+  upload_files:
+    - "{recording.output}"

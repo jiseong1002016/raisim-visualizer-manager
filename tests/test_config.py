@@ -32,3 +32,12 @@ def test_bolt_wrench_config_delegates_rollout_and_uploads_artifacts():
     assert "--no-discord-upload" in command
     assert cfg["unity"]["launch"] is True
     assert cfg["discord"]["upload_files"][0].endswith("unity.mp4")
+
+
+def test_generic_recording_config_uses_wrapper_recording():
+    root = Path(__file__).resolve().parents[1]
+    cfg = load_config(root / "examples" / "generic_recording.yaml")
+
+    assert cfg["unity"]["launch"] is False
+    assert cfg["recording"]["enable"] is True
+    assert cfg["recording"]["output"].endswith("artifacts/generic_recording/unity.mp4")
