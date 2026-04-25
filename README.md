@@ -20,6 +20,14 @@ python3 -m raisim_visualizer_manager.cli \
   --dry-run
 ```
 
+After installation, the console script is also available:
+
+```bash
+raisim-visualizer-manager \
+  --config examples/generic_tester.yaml \
+  --dry-run
+```
+
 ## Run A Tester
 
 ```bash
@@ -45,3 +53,8 @@ python3 -m raisim_visualizer_manager.cli \
 - `discord`: webhook discovery and upload file list
 
 Use `DISCORD_WEBHOOK_URL` for secrets. Do not commit webhook URLs.
+
+## CI
+
+GitHub Actions runs the unit tests, `compileall`, a generic dry-run, and a
+generic tester smoke on Python 3.10, 3.11, and 3.12.
