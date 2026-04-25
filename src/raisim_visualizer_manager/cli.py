@@ -118,9 +118,11 @@ def run_visualizer(cfg: dict, command: list[str], env: dict[str, str]) -> int:
             )
             _log(log, f"tester exit_code={code}")
 
+            recording_failed = False
             for proc in (record_proc, opencv_record_proc):
                 if proc is not None:
-                    proc.wait()
+                    if proc.wait() != 0:
+                        recording_failed = True
 
             if code != 0:
                 print(
@@ -129,6 +131,17 @@ def run_visualizer(cfg: dict, command: list[str], env: dict[str, str]) -> int:
                     f"discord_upload_sent=0 log={log_path}"
                 )
                 return int(code)
+
+            missing_outputs = _missing_recording_outputs(rec_cfg, opencv_cfg)
+            if recording_failed or missing_outputs:
+                detail = ",".join(missing_outputs) if missing_outputs else "ffmpeg_exit"
+                _log(log, f"recording failed detail={detail}")
+                print(
+                    "[raisim-visualizer-manager] FAIL "
+                    f"tester_exit_code={code} recording={int(bool(rec_cfg.get('enable', False)))} "
+                    f"discord_upload_sent=0 recording_error={detail} log={log_path}"
+                )
+                return 125
 
             upload_sent = False
             if bool(discord_cfg.get("enable", False)):
@@ -176,6 +189,15 @@ def _build_summary(cfg: dict, command: list[str]) -> dict:
             if key not in {"webhook"}
         },
     }
+
+
+def _missing_recording_outputs(rec_cfg: dict, opencv_cfg: dict) -> list[str]:
+    expected = []
+    if bool(rec_cfg.get("enable", False)):
+        expected.append(str(rec_cfg.get("output", "")))
+    if bool(opencv_cfg.get("capture_enable", False)):
+        expected.append(str(opencv_cfg.get("output", "")))
+    return [path for path in expected if path and not Path(path).expanduser().is_file()]
 
 
 def _log(log, msg: str) -> None:

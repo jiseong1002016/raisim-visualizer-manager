@@ -1,6 +1,7 @@
 vars:
   python: python3
   out_dir: artifacts/generic_recording
+  display: ":92"
 
 artifacts:
   out_dir: "{vars.out_dir}"
@@ -19,7 +20,7 @@ tester:
 unity:
   launch: false
   position: false
-  display: ":92"
+  display: "{vars.display}"
   port: 8083
   width: 320
   height: 240
