@@ -24,7 +24,7 @@ def upload_files(webhook: str, files: list[str], content: str) -> bool:
     if not webhook or not paths:
         return False
     escaped = content.replace("\\", "\\\\").replace('"', '\\"')
-    cmd = ["curl", "-sS", "-F", f'payload_json={{"content":"{escaped}"}}']
+    cmd = ["curl", "-sS", "--fail-with-body", "-F", f'payload_json={{"content":"{escaped}"}}']
     for idx, path in enumerate(paths):
         cmd.extend(["-F", f"files[{idx}]=@{path}"])
     cmd.append(webhook)
