@@ -1,0 +1,54 @@
+vars:
+  python: python3
+  out_dir: artifacts/generic
+
+artifacts:
+  out_dir: "{vars.out_dir}"
+  log: "{vars.out_dir}/visualizer.log"
+
+tester:
+  cwd: "{vars.config_dir}/.."
+  timeout_sec: 30
+  command:
+    - "{vars.python}"
+    - "-c"
+    - "print('generic tester executed')"
+  env:
+    PYTHONUNBUFFERED: "1"
+
+unity:
+  launch: false
+  position: false
+  display: ":1"
+  port: 8083
+  width: 1280
+  height: 720
+  window_x: 0
+  window_y: 0
+  window_title_regex: "RaiSimUnity|RaiSim|raisim|Unity"
+
+recording:
+  enable: false
+  ffmpeg_bin: ffmpeg
+  width: 1280
+  height: 720
+  seconds: 8
+  output: "{vars.out_dir}/unity.mp4"
+
+opencv:
+  # Use this only when the tester itself creates a stable OpenCV window.
+  capture_enable: false
+  window_x: 0
+  window_y: 0
+  width: 600
+  height: 372
+  output: "{vars.out_dir}/opencv.mp4"
+
+discord:
+  enable: false
+  webhook_env: DISCORD_WEBHOOK_URL
+  webhook_file: ""
+  message: "Generic RaiSim tester visual run complete."
+  upload_files:
+    - "{recording.output}"
+    - "{opencv.output}"

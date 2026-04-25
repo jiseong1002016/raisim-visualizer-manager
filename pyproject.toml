@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "raisim-visualizer-manager"
+version = "0.1.0"
+description = "Config-driven Unity/OpenCV recording and Discord upload wrapper for RaiSim tester commands."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["PyYAML>=6.0"]
+
+[project.optional-dependencies]
+test = ["pytest>=7.0"]
+
+[project.scripts]
+raisim-visualizer-manager = "raisim_visualizer_manager.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

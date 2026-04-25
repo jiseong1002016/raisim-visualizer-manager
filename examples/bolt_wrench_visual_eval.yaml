@@ -1,0 +1,93 @@
+vars:
+  workspace: /home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/env/envs/bolt_wrench_grasp_iteration
+  python: /home/Jiseong/anaconda3/envs/raisim/bin/python3
+  checkpoint: /home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch/raisimGymTorch/data/bolt_wrench_grasp_iteration/2026-04-23-16-49-58/full_299.pt
+  seed: "5"
+  max_time: "4"
+  out_dir: "{vars.workspace}/logs/for_test/visualizer_manager"
+
+artifacts:
+  out_dir: "{vars.out_dir}"
+  log: "{vars.out_dir}/visualizer.log"
+
+tester:
+  cwd: "{vars.workspace}"
+  timeout_sec: 120
+  command:
+    - "{vars.python}"
+    - "tester/etc/visualize/run_visual_eval.py"
+    - "--ckpt"
+    - "{vars.checkpoint}"
+    - "--mode"
+    - "visual"
+    - "--seed"
+    - "{vars.seed}"
+    - "--max-time"
+    - "{vars.max_time}"
+    - "--action-dim"
+    - "6"
+    - "--with-history"
+    - "--unity-port"
+    - "{unity.port}"
+    - "--unity-wait-sec"
+    - "4"
+    - "--visual-step-sleep"
+    - "0.01"
+    - "--contact-csv"
+    - "{vars.out_dir}/contact.csv"
+    - "--record-video"
+    - "{recording.output}"
+    - "--opencv-tactile"
+    - "--opencv-window-x"
+    - "{opencv.window_x}"
+    - "--opencv-window-y"
+    - "{opencv.window_y}"
+    - "--opencv-record-video"
+    - "{opencv.output}"
+    - "--no-launch-unity"
+    - "--no-discord-upload"
+  env:
+    PYTHONPATH: "/home/Jiseong/raisim_ws/raisimlib/raisimGymTorch/raisimGymTorch:."
+    PYTHONUNBUFFERED: "1"
+
+unity:
+  launch: true
+  position: true
+  bin: /home/Jiseong/raisim_ws/raisimlib/raisimUnityOpengl/linux/raisimUnity.x86_64
+  gui_settings: /home/Jiseong/raisim_ws/raisimlib/raisimUnityOpengl/linux/gui_settings.xml
+  display: ":1"
+  port: 8083
+  launch_wait_sec: 8
+  width: 1280
+  height: 720
+  window_x: 0
+  window_y: 0
+  window_title_regex: "RaiSimUnity|RaiSim|raisim|Unity"
+
+recording:
+  # Disabled here because bolt-wrench run_visual_eval.py records Unity itself.
+  # Enable this only for testers that do not own their own --record-video flag.
+  enable: false
+  ffmpeg_bin: ffmpeg
+  width: 1280
+  height: 720
+  seconds: 25
+  output: "{vars.out_dir}/unity.mp4"
+
+opencv:
+  # The bolt-wrench tester writes this video through OpenCV VideoWriter.
+  capture_enable: false
+  window_x: 0
+  window_y: 0
+  width: 600
+  height: 372
+  output: "{vars.out_dir}/opencv_tactile.mp4"
+
+discord:
+  enable: true
+  webhook_env: DISCORD_WEBHOOK_URL
+  webhook_file: "{vars.workspace}/CLAUDE.md"
+  message: "bolt-wrench visual rollout complete. ckpt={vars.checkpoint}"
+  upload_files:
+    - "{recording.output}"
+    - "{opencv.output}"
