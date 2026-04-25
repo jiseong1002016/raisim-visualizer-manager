@@ -122,6 +122,14 @@ def run_visualizer(cfg: dict, command: list[str], env: dict[str, str]) -> int:
                 if proc is not None:
                     proc.wait()
 
+            if code != 0:
+                print(
+                    "[raisim-visualizer-manager] FAIL "
+                    f"tester_exit_code={code} recording={int(bool(rec_cfg.get('enable', False)))} "
+                    f"discord_upload_sent=0 log={log_path}"
+                )
+                return int(code)
+
             upload_sent = False
             if bool(discord_cfg.get("enable", False)):
                 webhook = find_webhook(
